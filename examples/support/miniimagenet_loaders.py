@@ -179,35 +179,35 @@ class MiniImagenet(Dataset):
         return self.batchsz
 
 
-if __name__ == '__main__':
-    # the following episode is to view one set of images via tensorboard.
-    from torchvision.utils import make_grid
-    from matplotlib import pyplot as plt
-    from tensorboardX import SummaryWriter
-    import time
-
-    plt.ion()
-
-    tb = SummaryWriter('runs', 'mini-imagenet')
-    mini = MiniImagenet('../mini-imagenet/', mode='train', n_way=5, k_shot=1, k_query=1, batchsz=1000, resize=168)
-
-    for i, set_ in enumerate(mini):
-        # support_x: [k_shot*n_way, 3, 84, 84]
-        support_x, support_y, query_x, query_y = set_
-
-        support_x = make_grid(support_x, nrow=2)
-        query_x = make_grid(query_x, nrow=2)
-
-        plt.figure(1)
-        plt.imshow(support_x.transpose(2, 0).numpy())
-        plt.pause(0.5)
-        plt.figure(2)
-        plt.imshow(query_x.transpose(2, 0).numpy())
-        plt.pause(0.5)
-
-        tb.add_image('support_x', support_x)
-        tb.add_image('query_x', query_x)
-
-        time.sleep(5)
-
-    tb.close()
+# if __name__ == '__main__':
+#     # the following episode is to view one set of images via tensorboard.
+#     from torchvision.utils import make_grid
+#     from matplotlib import pyplot as plt
+#     from tensorboardX import SummaryWriter
+#     import time
+#
+#     plt.ion()
+#
+#     tb = SummaryWriter('runs', 'mini-imagenet')
+#     mini = MiniImagenet('../mini-imagenet/', mode='train', n_way=5, k_shot=1, k_query=1, batchsz=1000, resize=168)
+#
+#     for i, set_ in enumerate(mini):
+#         # support_x: [k_shot*n_way, 3, 84, 84]
+#         support_x, support_y, query_x, query_y = set_
+#
+#         support_x = make_grid(support_x, nrow=2)
+#         query_x = make_grid(query_x, nrow=2)
+#
+#         plt.figure(1)
+#         plt.imshow(support_x.transpose(2, 0).numpy())
+#         plt.pause(0.5)
+#         plt.figure(2)
+#         plt.imshow(query_x.transpose(2, 0).numpy())
+#         plt.pause(0.5)
+#
+#         tb.add_image('support_x', support_x)
+#         tb.add_image('query_x', query_x)
+#
+#         time.sleep(5)
+#
+#     tb.close()

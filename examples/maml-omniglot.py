@@ -45,7 +45,7 @@ import torch.optim as optim
 
 import higher
 
-from support.omniglot_loaders import OmniglotNShot
+from examples.support.omniglot_loaders import OmniglotNShot
 
 
 def main():
@@ -69,7 +69,7 @@ def main():
     np.random.seed(args.seed)
 
     # Set up the Omniglot loader.
-    device = torch.device('cuda')
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     db = OmniglotNShot(
         '/tmp/omniglot-data',
         batchsz=args.task_num,
