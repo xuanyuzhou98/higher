@@ -45,7 +45,7 @@ def main():
     argparser.add_argument('--seed', type=int, help='random seed', default=1)
     argparser.add_argument('--imgsz', type=int, help='imgsz', default=84)
     argparser.add_argument('--imgc', type=int, help='imgc', default=3)
-    argparser.add_argument('--path', type=str, help='imagepath', default='/home/jiangshanli/higher/miniImagenet')
+    argparser.add_argument('--path', type=str, help='imagepath', default='/home/jiangshanli/higher/miniimagenet')
 
     args = argparser.parse_args()
 
