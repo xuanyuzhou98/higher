@@ -34,7 +34,7 @@ def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--n_way', type=int, help='n way', default=5)
     argparser.add_argument(
-        '--k_spt', type=int, help='k shot for support set', default=1)
+        '--k_spt', type=int, help='k shot for support set', default=5)
     argparser.add_argument(
         '--k_qry', type=int, help='k shot for query set', default=15)
     argparser.add_argument(
@@ -83,7 +83,7 @@ def main():
     # device = torch.device('cuda')
     # maml = Meta(args, config).to(device)
     # TODO
-    net = iRevNet([1, 1, 1], [1, 1, 1], args.n_way, nChannels=[32, 32, 32], init_ds=0,
+    net = iRevNet([18, 18, 18], [1, 2, 2], args.n_way, nChannels=[32, 128, 512], init_ds=0,
                   dropout_rate=0.1, affineBN=True, in_shape=[args.imgc, args.imgsz, args.imgsz], mult=4).to(device)
 
     meta_opt = optim.Adam(net.parameters(), lr=1e-3)
