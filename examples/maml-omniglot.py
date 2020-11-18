@@ -46,6 +46,7 @@ import torch.optim as optim
 import higher
 
 from support.omniglot_loaders import OmniglotNShot
+from irevnet.models.iRevNet import iRevNet
 
 
 def main():
@@ -85,21 +86,23 @@ def main():
     # Before higher, models could *not* be created like this
     # and the parameters needed to be manually updated and copied
     # for the updates.
-    net = nn.Sequential(
-        nn.Conv2d(1, 64, 3),
-        nn.BatchNorm2d(64, momentum=1, affine=True),
-        nn.ReLU(inplace=True),
-        nn.MaxPool2d(2, 2),
-        nn.Conv2d(64, 64, 3),
-        nn.BatchNorm2d(64, momentum=1, affine=True),
-        nn.ReLU(inplace=True),
-        nn.MaxPool2d(2, 2),
-        nn.Conv2d(64, 64, 3),
-        nn.BatchNorm2d(64, momentum=1, affine=True),
-        nn.ReLU(inplace=True),
-        nn.MaxPool2d(2, 2),
-        Flatten(),
-        nn.Linear(64, args.n_way)).to(device)
+    # net = nn.Sequential(
+    #     nn.Conv2d(1, 64, 3),
+    #     nn.BatchNorm2d(64, momentum=1, affine=True),
+    #     nn.ReLU(inplace=True),
+    #     nn.MaxPool2d(2, 2),
+    #     nn.Conv2d(64, 64, 3),
+    #     nn.BatchNorm2d(64, momentum=1, affine=True),
+    #     nn.ReLU(inplace=True),
+    #     nn.MaxPool2d(2, 2),
+    #     nn.Conv2d(64, 64, 3),
+    #     nn.BatchNorm2d(64, momentum=1, affine=True),
+    #     nn.ReLU(inplace=True),
+    #     nn.MaxPool2d(2, 2),
+    #     Flatten(),
+    #     nn.Linear(64, args.n_way)).to(device)
+    net = iRevNet([1,1,1], [1,2,2], args.n_way, nChannels=[16,64,256], init_ds=0,
+                 dropout_rate=0.1, affineBN=True, in_shape=[3,28,28], mult=4, use_rev_bw=True).to(device)
 
     # We will use Adam to (meta-)optimize the initial parameters
     # to be adapted.
@@ -145,14 +148,17 @@ def train(db, net, device, meta_opt, epoch, log):
                 # higher is able to automatically keep copies of
                 # your network's parameters as they are being updated.
                 for _ in range(n_inner_iter):
-                    spt_logits = fnet(x_spt[i])
+                    data = x_spt[i]
+                    data = data + torch.zeros(1, device=data.device, dtype=data.dtype, requires_grad=True)
+                    spt_logits = fnet(data)[0]
                     spt_loss = F.cross_entropy(spt_logits, y_spt[i])
                     diffopt.step(spt_loss)
-
                 # The final set of adapted parameters will induce some
                 # final loss and accuracy on the query dataset.
                 # These will be used to update the model's meta-parameters.
-                qry_logits = fnet(x_qry[i])
+                qry_data = x_qry[i]
+                qry_data = qry_data + torch.zeros(1, device=qry_data.device, dtype=qry_data.dtype, requires_grad=True)
+                qry_logits = fnet(qry_data)[0]
                 qry_loss = F.cross_entropy(qry_logits, y_qry[i])
                 qry_losses.append(qry_loss.detach())
                 qry_acc = (qry_logits.argmax(
@@ -213,12 +219,16 @@ def test(db, net, device, epoch, log):
                 # gradient steps w.r.t. the model's parameters.
                 # This adapts the model's meta-parameters to the task.
                 for _ in range(n_inner_iter):
-                    spt_logits = fnet(x_spt[i])
+                    data = x_spt[i]
+                    data = data + torch.zeros(1, device=data.device, dtype=data.dtype, requires_grad=True)
+                    spt_logits = fnet(data)[0]
                     spt_loss = F.cross_entropy(spt_logits, y_spt[i])
                     diffopt.step(spt_loss)
 
+                qry_data = x_qry[i]
+                qry_data = qry_data + torch.zeros(1, device=qry_data.device, dtype=qry_data.dtype, requires_grad=True)
                 # The query loss and acc induced by these parameters.
-                qry_logits = fnet(x_qry[i]).detach()
+                qry_logits = fnet(qry_data)[0].detach()
                 qry_loss = F.cross_entropy(
                     qry_logits, y_qry[i], reduction='none')
                 qry_losses.append(qry_loss.detach())
@@ -237,8 +247,6 @@ def test(db, net, device, epoch, log):
         'mode': 'test',
         'time': time.time(),
     })
-
-
 
 
 def plot(log):
