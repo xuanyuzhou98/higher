@@ -43,7 +43,7 @@ def main():
         help='meta batch size, namely task num',
         default=4)
     argparser.add_argument('--seed', type=int, help='random seed', default=1)
-    argparser.add_argument('--imgsz', type=int, help='imgsz', default=84)
+    argparser.add_argument('--imgsz', type=int, help='imgsz', default=42)
     argparser.add_argument('--imgc', type=int, help='imgc', default=3)
     argparser.add_argument('--path', type=str, help='imagepath', default='/home/jiangshanli/higher/miniimagenet')
 
@@ -83,7 +83,7 @@ def main():
     # device = torch.device('cuda')
     # maml = Meta(args, config).to(device)
     # TODO
-    net = iRevNet([18, 18, 18], [1, 2, 2], args.n_way, nChannels=[32, 128, 512], init_ds=0,
+    net = iRevNet([18, 18, 18], [1, 1, 1], args.n_way, nChannels=[32, 128, 512], init_ds=0,
                   dropout_rate=0.1, affineBN=True, in_shape=[args.imgc, args.imgsz, args.imgsz], mult=4).to(device)
 
     meta_opt = optim.Adam(net.parameters(), lr=1e-3)
