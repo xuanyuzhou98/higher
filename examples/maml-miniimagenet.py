@@ -83,7 +83,7 @@ def main():
     # device = torch.device('cuda')
     # maml = Meta(args, config).to(device)
     # TODO
-    net = iRevNet([18, 18, 18], [1, 1, 1], args.n_way, nChannels=[32, 128, 512], init_ds=0,
+    net = iRevNet([10, 10, 10], [1, 1, 2], args.n_way, nChannels=[16, 64, 256], init_ds=0,
                   dropout_rate=0.1, affineBN=True, in_shape=[args.imgc, args.imgsz, args.imgsz], mult=4).to(device)
 
     meta_opt = optim.Adam(net.parameters(), lr=1e-3)
