@@ -51,7 +51,7 @@ from irevnet.models.iRevNet import iRevNet
 
 def main():
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--n_way', type=int, help='n way', default=5)
+    argparser.add_argument('--n_way', type=int, help='n way', default=20)
     argparser.add_argument(
         '--k_spt', type=int, help='k shot for support set', default=5)
     argparser.add_argument(
@@ -101,15 +101,15 @@ def main():
     #     nn.MaxPool2d(2, 2),
     #     Flatten(),
     #     nn.Linear(64, args.n_way)).to(device)
-    net = iRevNet([1,1,1], [1,2,2], args.n_way, nChannels=[16,64,256], init_ds=0,
-                 dropout_rate=0.1, affineBN=True, in_shape=[3,28,28], mult=4, use_rev_bw=True).to(device)
+    net = iRevNet([2,2,2], [1,2,2], args.n_way, nChannels=[16,64,256], init_ds=0,
+                 dropout_rate=0.1, affineBN=True, in_shape=[3,28,28], mult=4, use_rev_bw=False).to(device)
 
     # We will use Adam to (meta-)optimize the initial parameters
     # to be adapted.
     meta_opt = optim.Adam(net.parameters(), lr=1e-3)
 
     log = []
-    for epoch in range(100):
+    for epoch in range(150):
         train(db, net, device, meta_opt, epoch, log)
         test(db, net, device, epoch, log)
         plot(log)
