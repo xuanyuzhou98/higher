@@ -240,7 +240,7 @@ def plot(log):
     ax.plot(test_df['epoch'], test_df['acc'], label='Test')
     ax.set_xlabel('Epoch')
     ax.set_ylabel('Accuracy')
-    ax.set_ylim(70, 100)
+    ax.set_ylim(0, 100)
     fig.legend(ncol=2, loc='lower right')
     fig.tight_layout()
     fname = 'maml-accs.png'
