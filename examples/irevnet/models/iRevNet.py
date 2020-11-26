@@ -184,8 +184,8 @@ class RevSequential(nn.ModuleList):
 
 if __name__ == '__main__':
     model = iRevNet([32, 32, 32], [1, 2, 2], 3, nChannels=[16, 64, 256], init_ds=0,
-                 dropout_rate=0.1, affineBN=True, in_shape=[3,28,28], mult=4, use_rev_bw=False).cuda()
-    im = Variable(torch.randn(32, 3, 28, 28)).cuda()
+                 dropout_rate=0.1, affineBN=True, in_shape=[3,84,84], mult=4, use_rev_bw=False).cuda()
+    im = Variable(torch.randn(32, 3, 84, 84)).cuda()
     im += torch.zeros(1, device=im.device, dtype=im.dtype, requires_grad=True)
     y = model(im)[0]
     y.sum().backward()
